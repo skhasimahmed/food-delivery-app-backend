@@ -22,7 +22,7 @@ Before running this project, ensure that you have the following installed:
 
 1. **Clone the repository:**
 
-    git clone https://github.com/yourusername/your-api-project.git
+    git clone https://github.com/skhasimahmed/food-delivery-app-backend.git
 
 2. **Install dependencies:**
 
