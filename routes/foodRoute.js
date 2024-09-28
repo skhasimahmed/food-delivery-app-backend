@@ -12,6 +12,8 @@ import {
 
 const foodRouter = express.Router();
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     // const dir = "uploads";
