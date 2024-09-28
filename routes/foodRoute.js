@@ -11,16 +11,16 @@ import {
 
 const foodRouter = express.Router();
 
-// Image upload
 const storage = multer.diskStorage({
-  // destination: "uploads",
-
   destination: (req, file, cb) => {
     const dir = "uploads";
 
-    // Check if the directory exists, if not, create it
     if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+      try {
+        fs.mkdirSync(dir, { recursive: true });
+      } catch (err) {
+        return cb(err);
+      }
     }
 
     cb(null, dir);
