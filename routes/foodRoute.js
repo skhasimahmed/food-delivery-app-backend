@@ -1,5 +1,6 @@
 import express from "express";
 import fs from "fs";
+import path, { dirname } from "path";
 import multer from "multer";
 import {
   getFood,
@@ -13,7 +14,9 @@ const foodRouter = express.Router();
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const dir = "uploads";
+    // const dir = "uploads";
+
+    const dir = path.join(__dirname, `../uploads`);
 
     if (!fs.existsSync(dir)) {
       try {
