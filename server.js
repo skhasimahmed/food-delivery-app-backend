@@ -15,9 +15,6 @@ const port = process.env.APP_PORT || 5000;
 // app.use(express.urlencoded({ extended: true }))
 app.use(cors());
 
-// DB config
-connectDB();
-
 // Stripe webhook endpoint
 app.use("/api/stripe", stripeWebhookRouter);
 
@@ -47,7 +44,18 @@ app.get("/", (req, res) => {
   res.send("API is working!");
 });
 
-// Listening
-app.listen(port, () => {
-  console.log(`Server started on http://localhost:${port}`);
-});
+const startServer = async () => {
+  try {
+    // DB config
+    await connectDB();
+
+    // Listening
+    app.listen(port, () => {
+      console.log(`Server started on http://localhost:${port}`);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+startServer();
