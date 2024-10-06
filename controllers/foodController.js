@@ -2,6 +2,7 @@ import foodModel from "../models/foodModel.js";
 import fs from "fs";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
+import { cloudinary } from "../configs/cloudinary.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -72,15 +73,20 @@ const editFood = async (req, res) => {
     }
 
     if (req.file) {
-      const oldImagePath = path.join(__dirname, `../uploads/${food.image}`);
+      const oldImagePublicId = food.image.split(".")[0];
 
-      // Check if the old file exists before attempting to delete
-      if (fs.existsSync(oldImagePath)) {
-        fs.unlinkSync(oldImagePath);
-      }
+      await cloudinary.uploader.destroy(oldImagePublicId, (error, result) => {
+        if (error) {
+          return res.status(500).json({
+            message: "Failed to delete the old image",
+            success: false,
+          });
+        }
+      });
 
-      // fs.unlinkSync(`./uploads/${food.image}`);
-      food.image = req.file.filename;
+      const extension = path.extname(req.file.originalname);
+
+      food.image = req.file.filename + extension;
     }
 
     food.name = req.body.name;

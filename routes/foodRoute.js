@@ -1,7 +1,7 @@
 import express from "express";
-import fs from "fs";
-import path, { dirname } from "path";
-import { fileURLToPath } from "url";
+// import fs from "fs";
+// import path, { dirname } from "path";
+// import { fileURLToPath } from "url";
 import multer from "multer";
 import {
   getFood,
@@ -10,33 +10,33 @@ import {
   editFood,
   deleteFood,
 } from "../controllers/foodController.js";
+import { storage } from "../configs/cloudinary.js";
 
 const foodRouter = express.Router();
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+// const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    // const dir = "uploads";
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     // const dir = "uploads";
+//     const dir = path.join(__dirname, `../uploads/`); // Unable to upload image in Vercel
 
-    const dir = path.join(__dirname, `../uploads/`);
+//     if (!fs.existsSync(dir)) {
+//       try {
+//         fs.mkdirSync(dir, { recursive: true });
+//       } catch (err) {
+//         return cb(err);
+//       }
+//     }
 
-    if (!fs.existsSync(dir)) {
-      try {
-        fs.mkdirSync(dir, { recursive: true });
-      } catch (err) {
-        return cb(err);
-      }
-    }
+//     cb(null, dir);
+//   },
+//   filename: (req, file, cb) => {
+//     return cb(null, `${Date.now()}-${file.originalname}`);
+//   },
+// });
 
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    return cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
-
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
 foodRouter.post("/add", upload.single("image"), addFood);
 foodRouter.get("/:id/get", getFood);
