@@ -117,13 +117,27 @@ const deleteFood = async (req, res) => {
       });
     }
 
-    fs.unlinkSync(`./uploads/${food.image}`);
+    const oldImagePublicId = food.image.split(".")[0];
 
-    await foodModel.findByIdAndDelete(req.params.id);
-
-    res.json({
-      message: "Food deleted successfully",
-      success: true,
+    await cloudinary.uploader.destroy(oldImagePublicId, (error, result) => {
+      if (error) {
+        return res.status(500).json({
+          message: "Failed to delete the old image",
+          success: false,
+        });
+      } else {
+        foodModel
+          .findByIdAndDelete(req.params.id)
+          .then(() => {
+            res.json({
+              message: "Food deleted successfully",
+              success: true,
+            });
+          })
+          .catch((error) => {
+            res.json({ message: error.message, success: false });
+          });
+      }
     });
   } catch (error) {
     res.json({ message: error.message, success: false });
