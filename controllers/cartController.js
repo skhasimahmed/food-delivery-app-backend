@@ -53,11 +53,15 @@ const removeFromCart = async (req, res) => {
         message: "Item not found in cart",
         success: false,
       });
-    } else if (cartData[req.body.itemId] === 1) {
-      delete cartData[req.body.itemId];
-    } else {
-      cartData[req.body.itemId] -= 1;
     }
+
+    delete cartData[req.body.itemId];
+
+    // else if (cartData[req.body.itemId] === 1) {
+    //   delete cartData[req.body.itemId];
+    // } else {
+    //   cartData[req.body.itemId] -= 1;
+    // }
 
     await userModel.findByIdAndUpdate(user._id, {
       cartData,
