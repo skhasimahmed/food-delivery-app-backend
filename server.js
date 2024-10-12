@@ -7,6 +7,7 @@ import "dotenv/config";
 import cartRouter from "./routes/cartRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 import stripeWebhookRouter from "./routes/stripeWebhookRoute.js";
+import categoryRouter from "./routes/categoryRoute.js";
 
 // App config
 const app = express();
@@ -22,6 +23,7 @@ app.use("/api/stripe", stripeWebhookRouter);
 app.use(express.json());
 
 // API Endpoints
+app.use("/api/categories", categoryRouter);
 app.use("/api/food", foodRouter);
 app.use("/images", express.static("uploads"));
 app.use("/api/user", userRouter);

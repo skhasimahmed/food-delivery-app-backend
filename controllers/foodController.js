@@ -61,7 +61,7 @@ const listFood = async (req, res) => {
 };
 
 // Edit food item
-const editFood = async (req, res) => {
+const updateFood = async (req, res) => {
   try {
     const food = await foodModel.findById(req.params.id);
 
@@ -144,4 +144,4 @@ const deleteFood = async (req, res) => {
   }
 };
 
-export { addFood, getFood, listFood, editFood, deleteFood };
+export { addFood, getFood, listFood, updateFood, deleteFood };
