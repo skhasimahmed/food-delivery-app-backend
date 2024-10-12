@@ -98,8 +98,6 @@ export const updateCategory = async (req, res) => {
 
 // Delete category
 export const deleteCategory = async (req, res) => {
-  console.log(req.params.id);
-
   try {
     const category = await categoryModel.findById(req.params.id);
 
