@@ -1,13 +1,17 @@
 import express from "express";
 import cors from "cors";
-import { connectDB } from "./configs/db.js";
-import foodRouter from "./routes/foodRoute.js";
-import userRouter from "./routes/userRoute.js";
 import "dotenv/config";
+
+import { connectDB } from "./configs/db.js";
+
+import userRouter from "./routes/userRoute.js";
 import cartRouter from "./routes/cartRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 import stripeWebhookRouter from "./routes/stripeWebhookRoute.js";
+
+import foodRouter from "./routes/foodRoute.js";
 import categoryRouter from "./routes/categoryRoute.js";
+import adminUserRouter from "./routes/adminUserRoute.js";
 
 // App config
 const app = express();
@@ -25,6 +29,8 @@ app.use(express.json());
 // API Endpoints
 app.use("/api/categories", categoryRouter);
 app.use("/api/food", foodRouter);
+app.use("/api/users", adminUserRouter);
+
 app.use("/images", express.static("uploads"));
 app.use("/api/user", userRouter);
 app.use("/api/cart", cartRouter);

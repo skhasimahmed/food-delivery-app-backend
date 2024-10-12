@@ -76,6 +76,7 @@ const placeOrder = async (req, res) => {
         userId: req.user.id.toString(),
         // customerId: user.stripeCustomerId,
       },
+      customer_email: user.email,
     });
 
     await paymentModel.create({

@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
     cartData: { type: Object, default: {} },
     isAdmin: { type: Boolean, default: false },
     stripeCustomerId: { type: String, default: null },
+    deletedAt: { type: Date, default: null },
   },
   { timestamps: true, minimize: false }
 );
