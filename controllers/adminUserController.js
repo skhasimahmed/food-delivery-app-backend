@@ -1,10 +1,11 @@
 import userModel from "../models/userModel.js";
+import bcrypt from "bcrypt";
 
 export const getAllUsers = async (req, res) => {
   try {
     const users = await userModel.find({
       deletedAt: null,
-    });
+    }).sort({createdAt: -1});
     res.status(200).json({
       message: "Users fetched successfully",
       success: true,
@@ -49,8 +50,6 @@ export const updateUser = async (req, res) => {
         success: false,
       });
     }
-
-    console.log(req.body);
 
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
@@ -100,3 +99,92 @@ export const deleteUser = async (req, res) => {
     });
   }
 };
+
+export const updateProfile = async (req, res) => {
+  try {
+    const user = await userModel.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+    user.image = req.file?.filename || user.image;
+    await user.save();
+
+    res.status(200).json({
+      message: "Your profile is updated successfully",
+      user: {
+        userId: user._id,
+        name: user.name,
+        email: user.email,
+        image: user.image
+      },
+      success: true,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+      success: false,
+    });
+  }
+}
+
+  export const changePassword = async (req, res) => {    
+    try {      
+      const user = await userModel.findById(req.params.id);
+      if (!user) {
+        return res.status(404).json({
+          message: "User not found",
+          success: false,
+        });
+      }
+
+      const isMatch = await bcrypt.compare(req.body.currentPassword, user.password);
+      if (!isMatch) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Current password is not match!" });
+      }
+
+      if (req.body.newPassword.length < 8) {
+        return res.status(404).json({
+          success: false,
+          message: "New Password length is too short. Must be at least 8 characters.",
+        });
+      }
+
+      if (req.body.newPassword !== req.body.confirmNewPassword) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Please confirm new password!" });
+      }
+
+      const isNewPasswordMatch = await bcrypt.compare(req.body.newPassword, user.password);
+      if (isNewPasswordMatch) {
+        return res
+          .status(404)
+          .json({ success: false, message: "New password should not match with old password!" });
+      }
+
+      const salt = await bcrypt.genSalt(12);
+
+      const hashedPassword = await bcrypt.hash(req.body.newPassword, salt);
+
+      user.password = hashedPassword || user.password;
+      await user.save();
+
+      res.status(200).json({
+        message: "Password changed successfully. Please login with new password",
+        success: true,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: error.message,
+        success: false,
+      });
+    }
+  }

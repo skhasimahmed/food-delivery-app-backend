@@ -31,6 +31,7 @@ const loginUser = async (req, res) => {
         userId: user._id,
         name: user.name,
         email: user.email,
+        image: user.image
       },
       isAdmin: user.isAdmin ?? false,
       cartData: user.cartData,
@@ -90,6 +91,7 @@ const registerUser = async (req, res) => {
         userId: user._id,
         name: user.name,
         email: user.email,
+        image: user.image
       },
       isAdmin: user.isAdmin ?? false,
       token,

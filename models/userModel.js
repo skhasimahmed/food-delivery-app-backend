@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true, unique: true },
     cartData: { type: Object, default: {} },
     isAdmin: { type: Boolean, default: false },
+    image: { type: String, default: null },
     stripeCustomerId: { type: String, default: null },
     deletedAt: { type: Date, default: null },
   },

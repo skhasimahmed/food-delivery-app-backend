@@ -49,7 +49,7 @@ const addFood = async (req, res) => {
 // Get all foods
 const listFood = async (req, res) => {
   try {
-    const foods = await foodModel.find({});
+    const foods = await foodModel.find({}).sort({createdAt: -1});
     res.json({
       success: true,
       data: foods,
