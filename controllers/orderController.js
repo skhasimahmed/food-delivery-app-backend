@@ -126,4 +126,40 @@ const paymentInfo = async (req, res) => {
   }
 };
 
-export { placeOrder, paymentInfo };
+// Get payment info by order id
+const getAllOrders = async (req, res) => {
+  try {
+    const orders = await orderModel.find({
+      deletedAt: null,
+    }).sort({createdAt: -1});
+    res.status(200).json({
+      message: "Orders fetched successfully",
+      success: true,
+      data: orders,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+      success: false,
+    });
+  }
+};
+
+// Get Total Revenue
+const getTotanRevenue = async (req, res) => {
+  try {
+    const revenue = await paymentModel.aggregate([{ $match: { chargeStatus: "paid" } }, { $group: {_id : null, totalRevenue: { $sum: "$amount" } } }]);
+
+    res.json({
+      success: true,
+      revenue: revenue[0].totalRevenue
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: "Something went wrong. Please try again.",
+    });
+  }
+};
+
+export { placeOrder, paymentInfo, getAllOrders, getTotanRevenue };

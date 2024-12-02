@@ -2,6 +2,7 @@ import userModel from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import validator from "validator";
+import foodModel from "../models/foodModel.js";
 
 // Login user
 const loginUser = async (req, res) => {
@@ -107,4 +108,47 @@ const createToken = (user) => {
   });
 };
 
-export { loginUser, registerUser };
+// give rating by user
+const giveRating = async (req, res) => {
+  const { rating, foodId, userId } = req.body;
+  
+  try {
+    const existingFood = await foodModel.findOne({_id: foodId});
+
+    if (!existingFood) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Food not found" });
+    }   
+
+    const prevRatings = existingFood.ratings || [];    
+
+    const isRatingAlreadyGiven = prevRatings.filter(rating => rating.userId === userId);
+    if(prevRatings.length && isRatingAlreadyGiven.length) {
+      return res
+      .status(400)
+      .json({ success: false, message: "Ratings already given!" });
+    }
+    prevRatings.push({
+      rating,
+      foodId,
+      userId,
+      ratingDate: new Date()
+    });
+    existingFood.ratings = prevRatings;
+    
+    await existingFood.save();
+
+    const currentFoodAverageRating = existingFood.ratings.reduce((acc, newVal) => acc + newVal.rating, 0) / existingFood.ratings.length
+
+    res.status(201).json({
+      success: true,
+      message: "Thanks for your valuable ratings!",
+      selectedFoodRating: currentFoodAverageRating
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+};
+
+export { loginUser, registerUser, giveRating };

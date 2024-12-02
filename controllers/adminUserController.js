@@ -1,3 +1,4 @@
+import { cloudinary } from "../configs/cloudinary.js";
 import userModel from "../models/userModel.js";
 import bcrypt from "bcrypt";
 
@@ -110,9 +111,24 @@ export const updateProfile = async (req, res) => {
       });
     }
 
+    if(req.file) {
+      const oldImagePublicId = user.image?.split(".")[0];
+      if(oldImagePublicId) {
+        await cloudinary.uploader.destroy(oldImagePublicId, (error, result) => {
+          if (error) {
+            return res.status(500).json({
+              message: "Failed to delete the old image",
+              success: false,
+            });
+          }
+        });
+      }
+    }
+
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
     user.image = req.file?.filename || user.image;
+
     await user.save();
 
     res.status(200).json({

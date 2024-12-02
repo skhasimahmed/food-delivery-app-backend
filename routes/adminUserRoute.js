@@ -10,11 +10,12 @@ import {
 
 import { storage } from "../configs/cloudinary.js";
 import multer from "multer";
+import authMiddleware from "../middlewares/auth.js";
 const upload = multer({ storage });
 
 const adminUserRouter = express.Router();
 
-adminUserRouter.get("/", getAllUsers);
+adminUserRouter.get("/", authMiddleware, getAllUsers);
 adminUserRouter.get("/:id", getUser);
 adminUserRouter.put("/update/:id", updateUser);
 adminUserRouter.delete("/delete/:id", deleteUser);
