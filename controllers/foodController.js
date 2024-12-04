@@ -3,6 +3,7 @@ import fs from "fs";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import { cloudinary } from "../configs/cloudinary.js";
+import { log } from "console";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -47,14 +48,57 @@ const addFood = async (req, res) => {
 };
 
 // Get all foods
-const listFood = async (req, res) => {
+const listFood = async (req, res) => {  
   try {
-    const foods = await foodModel.find({}).sort({createdAt: -1});
-    res.json({
-      success: true,
-      data: foods,
-      message: "Foods fetched successfully",
-    });
+      const  { search, page, limit, category, priceShort } = req.query;     
+
+      let filter = {};
+      let query = [];
+      const skip = (parseInt(page) - 1) * parseInt(limit);
+      if(category && category != 'All') {
+        const regexCategory = new RegExp(category, 'i');
+        filter.category = regexCategory;
+      }      
+      let totalFoods = await foodModel.countDocuments(filter);
+      let totalPages = Math.ceil(totalFoods / parseInt(limit));
+      let foods = await foodModel.find(filter).skip(skip).limit(parseInt(limit)).sort({createdAt: -1});
+      if(search && search.length > 0) {
+        // Perform a case-insensitive 'like' search using a regular expression
+        const regexText = new RegExp(search, 'i'); // 'i' for case-insensitive
+
+        query = [
+          { name: { $regex: regexText } },
+          { description: { $regex: regexText } },
+          { category: { $regex: regexText } },
+        ]
+        foods = await foodModel.find({
+          $and: [
+            filter,
+            { $or: query }
+          ]
+        }).skip(skip).limit(parseInt(limit)).sort({createdAt: -1});
+
+        totalFoods = await foodModel.countDocuments({
+          $and: [
+            filter,
+            { $or: query }
+          ]
+        });
+        totalPages = Math.ceil(totalFoods / parseInt(limit));
+      }
+
+      if (priceShort === 'lowToHigh') {
+        foods = foods.sort((a, b) => a.price - b.price);
+      } else if (priceShort === 'highToLow') {
+        foods = foods.sort((a, b) => b.price - a.price);
+      }
+      res.json({
+        success: true,
+        data: foods,
+        totalFoods,
+        totalPages,
+        message: "Foods fetched successfully",
+      });
   } catch (error) {
     res.json({ message: error.message, success: false });
   }
