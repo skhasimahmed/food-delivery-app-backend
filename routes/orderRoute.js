@@ -1,6 +1,6 @@
 import express from "express";
 import authMiddleware from "../middlewares/auth.js";
-import { paymentInfo, placeOrder, getAllOrders, getTotanRevenue } from "../controllers/orderController.js";
+import { paymentInfo, placeOrder, getAllOrders, getTotalRevenue, changeOrderStatus } from "../controllers/orderController.js";
 
 const orderRouter = express.Router();
 
@@ -14,6 +14,9 @@ orderRouter.get("/payment-info", authMiddleware, paymentInfo);
 orderRouter.get("/all", authMiddleware, getAllOrders);
 
 // Get all orders
-orderRouter.get("/revenue", authMiddleware, getTotanRevenue);
+orderRouter.get("/revenue", authMiddleware, getTotalRevenue);
+
+// Change order status
+orderRouter.post("/change-status", authMiddleware, changeOrderStatus);
 
 export default orderRouter;
