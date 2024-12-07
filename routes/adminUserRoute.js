@@ -5,7 +5,7 @@ import {
   updateUser,
   deleteUser,
   updateProfile,
-  changePassword
+  changePassword,
 } from "../controllers/adminUserController.js";
 
 import { storage } from "../configs/cloudinary.js";
@@ -20,5 +20,9 @@ adminUserRouter.get("/:id", getUser);
 adminUserRouter.put("/update/:id", updateUser);
 adminUserRouter.delete("/delete/:id", deleteUser);
 adminUserRouter.put("/change-password/:id", changePassword);
-adminUserRouter.put("/update-profile/:id", upload.single("image"), updateProfile);
+adminUserRouter.put(
+  "/update-profile/:id",
+  upload.single("image"),
+  updateProfile
+);
 export default adminUserRouter;

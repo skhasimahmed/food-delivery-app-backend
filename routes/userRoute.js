@@ -1,6 +1,13 @@
 import express from "express";
-import { loginUser, registerUser, giveRating } from "../controllers/userController.js";
-import { changePassword, updateProfile } from "../controllers/adminUserController.js";
+import {
+  loginUser,
+  registerUser,
+  giveRating,
+} from "../controllers/userController.js";
+import {
+  changePassword,
+  updateProfile,
+} from "../controllers/adminUserController.js";
 import { storage } from "../configs/cloudinary.js";
 import multer from "multer";
 

@@ -32,7 +32,7 @@ const loginUser = async (req, res) => {
         userId: user._id,
         name: user.name,
         email: user.email,
-        image: user.image
+        image: user.image,
       },
       isAdmin: user.isAdmin ?? false,
       cartData: user.cartData,
@@ -92,7 +92,7 @@ const registerUser = async (req, res) => {
         userId: user._id,
         name: user.name,
         email: user.email,
-        image: user.image
+        image: user.image,
       },
       isAdmin: user.isAdmin ?? false,
       token,
@@ -111,43 +111,50 @@ const createToken = (user) => {
 // give rating by user
 const giveRating = async (req, res) => {
   const { rating, foodId, userId } = req.body;
-  
+
   try {
-    const existingFood = await foodModel.findOne({_id: foodId});
+    const existingFood = await foodModel.findOne({ _id: foodId });
 
     if (!existingFood) {
       return res
         .status(400)
         .json({ success: false, message: "Food not found" });
-    }   
+    }
 
-    const prevRatings = existingFood.ratings || [];    
+    const prevRatings = existingFood.ratings || [];
 
-    const isRatingAlreadyGiven = prevRatings.filter(rating => rating.userId === userId);
-    if(prevRatings.length && isRatingAlreadyGiven.length) {
+    const isRatingAlreadyGiven = prevRatings.filter(
+      (rating) => rating.userId === userId
+    );
+    if (prevRatings.length && isRatingAlreadyGiven.length) {
       return res
-      .status(400)
-      .json({ success: false, message: "Ratings already given!" });
+        .status(400)
+        .json({ success: false, message: "You have already rated this food" });
     }
     prevRatings.push({
       rating,
       foodId,
       userId,
-      ratingDate: new Date()
+      ratingDate: new Date(),
     });
     existingFood.ratings = prevRatings;
-    
+
     await existingFood.save();
 
-    const currentFoodAverageRating = existingFood.ratings.reduce((acc, newVal) => acc + newVal.rating, 0) / existingFood.ratings.length
+    const currentFoodAverageRating =
+      existingFood.ratings.reduce((acc, newVal) => acc + newVal.rating, 0) /
+      existingFood.ratings.length;
 
     res.status(201).json({
       success: true,
-      message: "Thanks for your valuable ratings!",
-      selectedFoodRating: currentFoodAverageRating
+      message: "Thank you for rating",
+      selectedFoodRating: currentFoodAverageRating,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Something went wrong" });
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong. Please try again",
+    });
   }
 };
 

@@ -18,7 +18,7 @@ const foodRouter = express.Router();
 
 // const storage = multer.diskStorage({
 //   destination: (req, file, cb) => {
-//     // const dir = "uploads";
+//     const dir = "uploads";
 //     const dir = path.join(__dirname, `../uploads/`); // Unable to upload image in Vercel
 
 //     if (!fs.existsSync(dir)) {

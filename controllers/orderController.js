@@ -130,22 +130,24 @@ const paymentInfo = async (req, res) => {
 // Get payment info by order id
 const getAllOrders = async (req, res) => {
   try {
-    const {orderUserId} = req.query;
+    const { orderUserId } = req.query;
     const filter = {
-      deletedAt: null
+      deletedAt: null,
     };
-    if(orderUserId?.length > 0) {
+    if (orderUserId?.length > 0) {
       filter.userId = orderUserId;
     }
-    
-    const orders = await orderModel.find(filter).populate("userId").sort({createdAt: -1});
-    
+
+    const orders = await orderModel
+      .find(filter)
+      .populate("userId")
+      .sort({ createdAt: -1 });
+
     res.status(200).json({
       message: "Orders fetched successfully",
       success: true,
       data: orders,
     });
-
   } catch (error) {
     res.status(500).json({
       message: error.message,
@@ -157,11 +159,14 @@ const getAllOrders = async (req, res) => {
 // Get Total Revenue
 const getTotalRevenue = async (req, res) => {
   try {
-    const revenue = await paymentModel.aggregate([{ $match: { chargeStatus: "paid" } }, { $group: {_id : null, totalRevenue: { $sum: "$amount" } } }]);
+    const revenue = await paymentModel.aggregate([
+      { $match: { chargeStatus: "paid" } },
+      { $group: { _id: null, totalRevenue: { $sum: "$amount" } } },
+    ]);
 
     res.json({
       success: true,
-      revenue: revenue[0].totalRevenue
+      revenue: revenue[0].totalRevenue,
     });
   } catch (error) {
     res.json({
@@ -172,7 +177,7 @@ const getTotalRevenue = async (req, res) => {
 };
 
 // Change order status
-const changeOrderStatus = async (req, res) => {  
+const changeOrderStatus = async (req, res) => {
   try {
     const order = await orderModel.findById(req.body.id);
     if (!order) {
@@ -196,6 +201,12 @@ const changeOrderStatus = async (req, res) => {
       success: false,
     });
   }
-}
+};
 
-export { placeOrder, paymentInfo, getAllOrders, getTotalRevenue, changeOrderStatus };
+export {
+  placeOrder,
+  paymentInfo,
+  getAllOrders,
+  getTotalRevenue,
+  changeOrderStatus,
+};
