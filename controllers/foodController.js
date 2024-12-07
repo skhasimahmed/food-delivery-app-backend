@@ -3,7 +3,6 @@ import fs from "fs";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import { cloudinary } from "../configs/cloudinary.js";
-import { log } from "console";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -151,6 +150,20 @@ const updateFood = async (req, res) => {
   }
 };
 
+// Get all foods
+const getAllFoods = async (req, res) => {
+  try {
+    const foods = await foodModel.find({ deletedAt: null });
+    res.json({
+      success: true,
+      data: foods,
+      message: "Foods fetched successfully",
+    });
+  } catch (error) {
+    res.json({ message: error.message, success: false });
+  }
+};
+
 // Delete food item
 const deleteFood = async (req, res) => {
   try {
@@ -190,4 +203,4 @@ const deleteFood = async (req, res) => {
   }
 };
 
-export { addFood, getFood, listFood, updateFood, deleteFood };
+export { addFood, getFood, listFood, updateFood, deleteFood, getAllFoods };

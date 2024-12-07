@@ -9,6 +9,7 @@ import {
   listFood,
   updateFood,
   deleteFood,
+  getAllFoods,
 } from "../controllers/foodController.js";
 import { storage } from "../configs/cloudinary.js";
 
@@ -41,6 +42,7 @@ const upload = multer({ storage });
 foodRouter.post("/add", upload.single("image"), addFood);
 foodRouter.get("/:id/get", getFood);
 foodRouter.get("/list", listFood);
+foodRouter.get("/all", getAllFoods);
 foodRouter.put("/:id/update", upload.single("image"), updateFood);
 foodRouter.delete("/delete/:id", deleteFood);
 
