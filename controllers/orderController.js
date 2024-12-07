@@ -2,6 +2,7 @@ import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
 import paymentModel from "../models/paymentModel.js";
 import Stripe from "stripe";
+import { populate } from "dotenv";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -126,4 +127,86 @@ const paymentInfo = async (req, res) => {
   }
 };
 
-export { placeOrder, paymentInfo };
+// Get payment info by order id
+const getAllOrders = async (req, res) => {
+  try {
+    const { orderUserId } = req.query;
+    const filter = {
+      deletedAt: null,
+    };
+    if (orderUserId?.length > 0) {
+      filter.userId = orderUserId;
+    }
+
+    const orders = await orderModel
+      .find(filter)
+      .populate("userId")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      message: "Orders fetched successfully",
+      success: true,
+      data: orders,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+      success: false,
+    });
+  }
+};
+
+// Get Total Revenue
+const getTotalRevenue = async (req, res) => {
+  try {
+    const revenue = await paymentModel.aggregate([
+      { $match: { chargeStatus: "paid" } },
+      { $group: { _id: null, totalRevenue: { $sum: "$amount" } } },
+    ]);
+
+    res.json({
+      success: true,
+      revenue: revenue[0].totalRevenue,
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: "Something went wrong. Please try again.",
+    });
+  }
+};
+
+// Change order status
+const changeOrderStatus = async (req, res) => {
+  try {
+    const order = await orderModel.findById(req.body.id);
+    if (!order) {
+      return res.status(404).json({
+        message: "Order not found",
+        success: false,
+      });
+    }
+
+    order.status = req.body.status || order.status;
+
+    await order.save();
+
+    res.status(200).json({
+      message: "Order status is changed successfully",
+      success: true,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+      success: false,
+    });
+  }
+};
+
+export {
+  placeOrder,
+  paymentInfo,
+  getAllOrders,
+  getTotalRevenue,
+  changeOrderStatus,
+};

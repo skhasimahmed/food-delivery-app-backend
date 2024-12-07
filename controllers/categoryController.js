@@ -7,7 +7,7 @@ import { cloudinary } from "../configs/cloudinary.js";
 // List all categories
 export const listCategories = async (req, res) => {
   try {
-    const categories = await categoryModel.find();
+    const categories = await categoryModel.find().sort({ createdAt: -1 });
 
     res.json({
       success: true,

@@ -12,6 +12,7 @@ import stripeWebhookRouter from "./routes/stripeWebhookRoute.js";
 import foodRouter from "./routes/foodRoute.js";
 import categoryRouter from "./routes/categoryRoute.js";
 import adminUserRouter from "./routes/adminUserRoute.js";
+import chartsRouter from "./routes/chartsRoute.js";
 
 // App config
 const app = express();
@@ -35,6 +36,8 @@ app.use("/images", express.static("uploads"));
 app.use("/api/user", userRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
+
+app.use("/api/charts", chartsRouter);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

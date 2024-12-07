@@ -7,6 +7,7 @@ const foodSchema = new mongoose.Schema(
     description: { type: String, required: true },
     category: { type: String, required: true },
     image: { type: String, required: true },
+    ratings: { type: Array, default: [] },
   },
   { timestamps: true, minimize: false }
 );
